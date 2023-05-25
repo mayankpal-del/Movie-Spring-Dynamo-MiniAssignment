@@ -1,10 +1,14 @@
 package com.dynamo.repository;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.dynamo.models.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+
 
 
 import java.util.List;
@@ -33,15 +37,15 @@ public class MovieRepository {
         return dynamoDBMapper.scan(Movie.class, new DynamoDBScanExpression());
     }
 
-//    public String update(String id, Movie movie){
-//        dynamoDBMapper.save(movie,
-//                new DynamoDBSaveExpression()
-//                        .withExpectedEntry("id",
-//                                new ExpectedAttributeValue(
-//                                        new AttributeValue().withS(id)
-//                                )));
-//        return id;
-//    }
+    public String update(String id, Movie movie){
+        dynamoDBMapper.save(movie,
+                new DynamoDBSaveExpression()
+                        .withExpectedEntry("id",
+                                new ExpectedAttributeValue(
+                                        new AttributeValue().withS(id)
+                                )));
+        return id;
+    }
 
     public String delete(String id){
         Movie book = dynamoDBMapper.load(Movie.class, id);

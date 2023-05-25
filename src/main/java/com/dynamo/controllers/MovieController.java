@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
+
 
 
 import java.util.List;
@@ -17,11 +17,6 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
-
-//    @Autowired
-//    public MovieController(MovieService movieService) {
-//        this.movieService = movieService;
-//    }
 
     @PostMapping("/importCsv")
     public List<Movie> importCsv(){
@@ -48,12 +43,12 @@ public class MovieController {
         return movieService.findAll();
     }
 
-//    @PutMapping("/{id}")
-//    public String update(@PathVariable(value = "id") String id,
-//                         @RequestBody Movie movie){
-//        logger.info("update movie " + this.getClass().getName());
-//        return movieService.update(id, movie);
-//    }
+    @PutMapping("/{id}")
+    public String update(@PathVariable(value = "id") String id,
+                         @RequestBody Movie movie){
+        logger.info("update movie " + this.getClass().getName());
+        return movieService.update(id, movie);
+    }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable(value = "id") String id){

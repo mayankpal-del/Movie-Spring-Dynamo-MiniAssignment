@@ -20,7 +20,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,8 +35,6 @@ public class MovieService {
         logger.info("save movie " + this.getClass().getName());
         return movieRepository.save(movie);
     }
-//    public List<Movie> readCsv() {
-//        List<Movie> movies = new ArrayList<>();
 
 
         public List<Movie> readCsv(){
@@ -99,11 +96,10 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-//    public String update(String id, Movie movie){
-//        logger.info("update movie " + this.getClass().getName());
-//        return movieRepository.update(id, movie);
-//    }
-//..........................................................................................
+    public String update(String id, Movie movie){
+        logger.info("update movie " + this.getClass().getName());
+        return movieRepository.update(id, movie);
+    }
     public String delete(String id){
         logger.info("Edit Configurations… movie " + this.getClass().getName());
         return movieRepository.delete(id);
@@ -121,7 +117,7 @@ public class MovieService {
         DynamoDbClient ddb = DynamoDbClient.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(Region.of(region))
-                .endpointOverride(URI.create("http://localhost:8000")) // Local DynamoDB endpoint
+                .endpointOverride(URI.create("http://localhost:8000"))
                 .build();
 
         try {
@@ -134,7 +130,6 @@ public class MovieService {
                 String itemDirector = item.get("director").s();
                 if(director.equals(itemDirector) ){
                     int year = Integer.parseInt(item.get("year").s());
-// System.out.println(year);
                     if(startYear < year && endYear > year) {
                         title = item.get("title").s();
                         Titles.add(title);
@@ -163,7 +158,7 @@ public class MovieService {
         DynamoDbClient ddb = DynamoDbClient.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(Region.of(region))
-                .endpointOverride(URI.create("http://localhost:8000")) // Local DynamoDB endpoint
+                .endpointOverride(URI.create("http://localhost:8000"))
                 .build();
         try {
             ScanRequest scanRequest = ScanRequest.builder()
@@ -172,13 +167,13 @@ public class MovieService {
             ScanResponse response = ddb.scan(scanRequest);
             List<Map<String, AttributeValue>> items = response.items();
 
-// Filter English titles with user reviews greater than the given filter
+
             List<Map<String, AttributeValue>> filteredItems = items.stream()
                     .filter(item -> {
                         AttributeValue languageValue = item.get("language");
                         AttributeValue reviewsValue = item.get("reviews_from_users");
 
-// Check if the attribute values are not null
+
                         if (languageValue != null && reviewsValue != null) {
                             String language = languageValue.s();
                             String reviews = reviewsValue.s();
@@ -186,11 +181,9 @@ public class MovieService {
                                 System.out.println(item);
                             return "English".equals(language) && Integer.parseInt(reviews) > userReviewFilter;
                         }
-// Skip items with missing or null attribute values
                         return false;
                     })
                     .collect(Collectors.toList());
-// Sort the filtered items by user reviews in descending order
             filteredItems.sort((item1, item2) -> Integer.compare(
                     Integer.parseInt(item2.get("reviews_from_users").s()),
                     Integer.parseInt(item1.get("reviews_from_users").s())));
